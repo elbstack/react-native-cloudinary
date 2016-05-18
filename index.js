@@ -24,11 +24,12 @@ module.exports = {
 			    data: {
 			    	api_key: this.options.apiKey,
 			    	timestamp: timestamp,
-			    	signature: signature
+						signature: signature,
+						upload_preset: this.options.uploadPreset
 			    }
 			};
 
-		FileTransfer.upload(obj, (err, res) => {
+		NativeModules.FileTransfer.upload(obj, (err, res) => {
 			if(res) successCb(res);
 		    if(err) errorCb(err);
 		});
