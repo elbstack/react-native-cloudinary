@@ -24,7 +24,6 @@ module.exports = {
 			    data: {
 			    	api_key: this.options.apiKey,
 			    	timestamp: timestamp,
-						signature: signature,
 						upload_preset: this.options.uploadPreset
 			    }
 			};
