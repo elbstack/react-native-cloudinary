@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/yortuc/react-native-cloudinary#readme",
   "dependencies": {
-    "react-native-file-transfer": "0.0.3"
+    "react-native-file-transfer": "0.0.3",
+    "react-native-file-transfer-android": "0.0.2"
   }
 }

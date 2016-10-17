@@ -1,4 +1,5 @@
-var { NativeModules } = require('react-native');
+var { NativeModules, Platform } = require('react-native');
+var FileTransfer = require('react-native-file-transfer-android');
 var Sha1 = require('./Sha1');
 
 module.exports = {
@@ -27,10 +28,16 @@ module.exports = {
 						upload_preset: this.options.uploadPreset
 			    }
 			};
-
-		NativeModules.FileTransfer.upload(obj, (err, res) => {
-			if(res) successCb(res);
-		    if(err) errorCb(err);
-		});
+			
+		var cb = (err, res) => {
+			if (res) successCb(res);
+			if (err) errorCb(err);
+		};
+		
+		if (Platform.OS === 'ios') {
+			NativeModules.FileTransfer.upload(obj, cb);
+		} else { // Android
+			FileTransfer.upload(obj, cb);
+		}
 	}
 };
