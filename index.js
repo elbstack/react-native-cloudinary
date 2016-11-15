@@ -14,40 +14,56 @@ module.exports = {
 		this.options = options;
 	},
 
-	upload: function (uri, successCb, errorCb) {
+	upload: function (image, successCb, errorCb) {
 
 		var timestamp = Date.now(),
-			keys = "timestamp=" + timestamp + this.options.apiSecret,
-			signature = Sha1.hash( keys ),
 			obj = {
-			    uri: uri,
+			    uri: image.uri,
 			    uploadUrl: "https://api.cloudinary.com/v1_1/" + this.options.cloudName + "/image/upload",
 			    data: {
 			    	api_key: this.options.apiKey,
 			    	timestamp: timestamp,
-						upload_preset: this.options.uploadPreset
+					upload_preset: this.options.uploadPreset
 			    }
 			};
 			
 		var cb = (err, res) => {
-		
 			if (res) {
-				alert(res);
 				successCb(res);
 			}
 			if (err) {
-				alert(err);
+				alert('ERROR: '+err);
  				errorCb(err);
 			}
 		};
-
-		alert('uploading..')
 		
 		if (Platform.OS === 'ios') {
-			NativeModules.FileTransfer.upload(obj, cb);
+			NativeModules.FileTransfer.upload(obj, (err, res) => {
+				if (err) return cb(err);
+
+				cb(null, JSON.parse(res.data));
+			});
 		} else { // Android
-			obj.contentType = 'multipart/form-data';
-			FileUploader.upload(obj, cb);
+			let req = new XMLHttpRequest();
+			let formData = new FormData();
+
+			formData.append('file', {name: 'profile_image', uri: image.uri, type: image.mime});
+			formData.append('api_key', obj.data.api_key);
+			formData.append('timestamp', obj.data.timestamp);
+			formData.append('upload_preset', obj.data.upload_preset);
+			formData.append('resource_type', 'image');
+
+			req.addEventListener('load', (response) => {
+				if (req.status == 200 && req.status < 300)
+					cb(null, JSON.parse(req.responseText));
+				else 
+					cb(new Error('Unknown Error'));
+			})
+			req.addEventListener('error', (err) => {
+				cb(err);
+			})
+			req.open('POST', obj.uploadUrl);
+			req.send(formData);
 		}
 	}
 };
