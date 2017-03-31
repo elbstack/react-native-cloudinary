@@ -47,7 +47,7 @@ module.exports = {
 			let req = new XMLHttpRequest();
 			let formData = new FormData();
 
-			formData.append('file', {name: 'profile_image', uri: image.uri, type: image.mime});
+			formData.append('file', {name: 'profile_image', uri: image.uri, type: image.mime || 'image/jpeg'});
 			formData.append('api_key', obj.data.api_key);
 			formData.append('timestamp', obj.data.timestamp);
 			formData.append('upload_preset', obj.data.upload_preset);
